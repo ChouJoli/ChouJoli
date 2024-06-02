@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《決戰還是逃跑》</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            color: #00ff88;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        #gameContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 800px;
+            background: #1a1a1a;
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        #startButton {
+            display: block;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #00ff88;
+            color: #000;
+            border: 2px solid #00ff88;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px auto;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        #startButton:hover {
+            background-color: #000;
+            color: #00ff88;
+        }
+
+        #messageForm {
+            display: flex;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #00ff88;
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px 0 0 5px;
+            font-size: 14px;
+        }
+
+        #messageInput:focus {
+            border-color: #00ff88;
+        }
+
+        #messageInput::placeholder {
+            color: #777;
+        }
+
+        #sendMessageBtn {
+            padding: 10px 20px;
+            background-color: #00ff88;
+            color: #000;
+            border: 2px solid #00ff88;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        #sendMessageBtn:hover {
+            background-color: #000;
+            color: #00ff88;
+        }
+
+        #sceneImage {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #sceneImage img {
+            max-width: 100%;
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        #messages {
+            margin-top: 20px;
+            overflow-y: scroll;
+            max-height: 300px;
+            background-color: #000;
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            width: 100%;
+            padding: 10px;
+            box-shadow: inset 0 0 10px rgba(0, 255, 136, 0.2);
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            color: #00ff88;
+            font-size: 14px;
+        }
+
+        .userMessage {
+            background-color: #444;
+            text-align: right;
+        }
+
+        .botMessage {
+            background-color: #555;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>《決戰還是逃跑》</h1>
+    <div id="gameContainer">
+        <button id="startButton">開始遊戲</button>
+        <form id="messageForm" style="display: none;">
+            <input type="text" id="messageInput" placeholder="你的回答..." required>
+            <button id="sendMessageBtn" type="submit">發送</button>
+        </form>
+        <div id="sceneImage">
+            <!-- 圖片將在這裡顯示 -->
+        </div>
+        <div id="messages"></div>
+    </div>
+    <script>
+        var conversationHistory = [];
+        var apiKey = prompt("請輸入您的 API key");
+
+        if (!apiKey) {
+            alert("需要 API key 才能使用此聊天室。");
+        } else {
+            document.getElementById('startButton').addEventListener('click', function () {
+                document.getElementById('messageForm').style.display = 'flex';
+                document.getElementById('startButton').style.display = 'none';
+
+                conversationHistory.push({
+                    "role": 'user',
+                    "parts": [{
+                        "text": `腳本：
+"""
+遊戲標題：《決戰還是逃跑》
+遊戲背景
+亞歷《決戰還是逃跑》的故事背景設定在一片神秘的叢林深處，這片叢林充滿了未知的危險和寶藏。主角艾瑞克是一名勇敢的探險家，他率領著一支探險隊，探索著這片叢林，尋找一個傳說中的古文明遺跡。遺跡據說隱藏著無數的寶藏和智慧，但同時也伴隨著無數的危險，其中就包括了古老而兇猛的巨型虎。克斯是一位剛入學的大學新生，試圖在新環境中找到自己的定位並建立人際關係。遊戲通過亞歷克斯的互動和選擇來探索表達真實感受的重要性。
+
+主要角色：
+艾瑞克（Eric）：本故事的主角，一名勇敢的探險家。他擁有豐富的探險經驗和領導能力，是探險隊的領袖。
+探險隊員（Explorers）：艾瑞克的同伴，是一群勇敢的探險家。他們各自擁有不同的專長和技能，在艾瑞克的帶領下，共同探索未知的叢林。
+巨型虎（Giant Tiger）：叢林中的一種神秘生物，全身覆蓋著古老的紋路，力大無比且兇猛危險。它似乎在守護著古文明遺跡，是探險隊面臨的最大敵人之一。
+
+開場
+（場景：叢林）
+密林中的陽光被茂密的樹葉遮蔽，只留下斑駁的光影。艾瑞克和他的探險隊正穿越這片未知的叢林，尋找傳說中的古文明遺跡。
+艾瑞克：「我們一定要找到這個遺跡，這是我們探險隊的使命。」
+探險隊員：「是的隊長，這裡的確很神秘，但也很危險。」
+選擇1：艾瑞克決定深入叢林。
+選擇2：艾瑞克選擇離開現場。
+
+面臨危險
+（場景：猛獸）
+突然，一頭巨型虎從叢林深處跳出，攔住了艾瑞克和探險隊的去路。這頭巨型虎全身覆滿古老的紋路，發出低沉的咆哮，眼中閃爍著凶光。
+艾瑞克：「這是什麼怪物！它看起來像是在守護著什麼重要的東西。」
+探險隊員：「我們該怎麼辦，艾瑞克？這東西看起來很危險！」
+選擇1：艾瑞克決定與猛獸展開搏鬥。
+選擇2：艾瑞克選擇迅速逃離現場。
+
+生死關頭
+（場景：戰鬥）
+艾瑞克和探險隊員們奮力與巨型虎搏鬥，但巨型虎力量驚人，形勢對他們非常不利。
+艾瑞克：「我們不能放棄，這是我們唯一的機會！」
+探險隊員：「隊長，小心！它的力量太強了！」
+選擇1：艾瑞克決定拼死一搏。
+選擇2：艾瑞克選擇呼叫撤退。
+
+結局
+拼死一搏成功結局：如果在生死關頭選擇１，艾瑞克和探險隊在千鈞一髮之際擊敗了巨型虎，找到了古文明遺跡並發現了寶藏。他們成為了英雄，這次探險成為了傳奇。
+撤退成功結局：如果在生死關頭選擇２，艾瑞克和探險隊成功撤退，保住了性命，但並未發現遺跡。然而，他們獲得了寶貴的經驗教訓，他們決心在未來的探險中更加謹慎和準備充分。
+
+遊戲結尾
+遊戲最後將根據艾瑞克的選擇提供一段反思，強調在戰鬥與逃跑中每個選擇的重要性
+"""
+
+請根據腳本中的對話，根據"""開場"""到"""面臨危險"""最後到"""生與關頭"""進行，開始一個文字冒險遊戲，每一次的對話，都需要呈現以下資訊與格式：
+<場景>：目前故事的背景為何
+<故事>
+<選擇>：在每一次的對話中，你都會根據腳本給我可以選擇的動作，根據我選擇的動作繼續接下來的劇情，整體劇情會圍繞腳本發展。
+
+根據我的選擇進行故事就好，不要幫我做出選擇。場景<叢林>只能出現一次就要切換場景進入到面臨危險`
+                    }]
+                });
+
+                fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + apiKey, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "contents": conversationHistory,
+                        "safetySettings": [
+                            {
+                                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                                "threshold": "BLOCK_ONLY_HIGH"
+                            },
+                            {
+                                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                                "threshold": "BLOCK_ONLY_HIGH"
+                            },
+                        ],
+                        "generationConfig": {
+                            "stopSequences": [
+                                ""
+                            ],
+                            "temperature": 1.0,
+                            "maxOutputTokens": 2048,
+                            "topP": 0.8,
+                            "topK": 10
+                        }
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        var responseText = data.candidates[0].content.parts[0].text;
+                        addToConversationHistory('model', responseText);
+                        displayMessage(responseText, 'bot');
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+
+            document.getElementById('messageForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+                var message = document.getElementById('messageInput').value;
+
+                addToConversationHistory('user', message);
+                displayMessage(message, 'user');
+
+                fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + apiKey, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "contents": conversationHistory,
+                        "safetySettings": [
+                            {
+                                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                                "threshold": "BLOCK_ONLY_HIGH"
+                            },
+                            {
+                                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                                "threshold": "BLOCK_ONLY_HIGH"
+                            },
+                        ],
+                        "generationConfig": {
+                            "stopSequences": [
+                                ""
+                            ],
+                            "temperature": 1.0,
+                            "maxOutputTokens": 2048,
+                            "topP": 0.8,
+                            "topK": 10
+                        }
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        var responseText = data.candidates[0].content.parts[0].text;
+                        addToConversationHistory('model', responseText);
+                        displayMessage(responseText, 'bot');
+                    })
+                    .catch(error => console.error('Error:', error));
+
+                document.getElementById('messageInput').value = '';
+            });
+        }
+
+        function addToConversationHistory(role, text) {
+            conversationHistory.push({
+                "role": role,
+                "parts": [{
+                    "text": text
+                }]
+            });
+        }
+
+        function displayMessage(message, sender) {
+            var messageElement = document.createElement('div');
+            var formatMessage = formatText(message);
+            messageElement.innerHTML = formatMessage;
+            if (sender === 'user') {
+                messageElement.classList.add('userMessage');
+            } else {
+                messageElement.classList.add('botMessage');
+            }
+            messageElement.classList.add('message');
+            document.getElementById('messages').appendChild(messageElement);
+            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+            updateSceneImage(message);
+        }
+
+        function updateSceneImage(responseText) {
+            let sceneMatch = responseText.match(/場景：(.*?)\s/);
+            if (sceneMatch && sceneMatch[1]) {
+                let scene = sceneMatch[1];
+                if (scene.includes("猛獸")) {
+                    document.getElementById('sceneImage').innerHTML = '<img src="./img/dorm.jpeg" alt="猛獸" style="width:300px;">';
+                } else if (scene.includes("叢林")) {
+                    document.getElementById('sceneImage').innerHTML = '<img src="./img/party.jpeg" alt="叢林" style="width:300px;">';
+                } else if (scene.includes("撤退")) {
+                    document.getElementById('sceneImage').innerHTML = '<img src="./img/library.jpeg" alt="撤退" style="width:300px;">';
+                } else {
+                    document.getElementById('sceneImage').innerHTML = '';
+                }
+            }
+        }
+
+        function formatText(text) {
+            let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<br>$1');
+            formattedText = formattedText.replace(/\*(.*?)\s/g, '<br>$1');
+            return formattedText;
+        }
+    </script>
+</body>
+
+</html>
